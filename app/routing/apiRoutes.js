@@ -11,8 +11,11 @@ apiRoutes = function(expressApp) {
         let body = {
             name: req.body.name,
             photo: req.body.photo,
-            scores: req.body.scores
+            scores: []
         }
+        req.body.scores.map(elem => {
+            body.scores.push(parseInt(elem));
+        })
         friendsArray.push(body);
     });   
 }
