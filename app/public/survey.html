@@ -193,15 +193,19 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    </div>
+                </div>
+                <!-- <div class="row"> -->
                     <div class="modal-body">
                         <div id="matchName"></div>
                         <div id="matchPhoto"></div>
                     </div>
+                <!-- </div> -->
+                <!-- <div class="row"> -->
                     <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                    </div>
+                <!-- </div> -->
             </div>
         </div>
     </div>
@@ -215,6 +219,7 @@
         // On submit
         const numQuestions = 10;
         // const path = require("path");
+        let firends;
         let person;
         let name;
         let photo;
@@ -248,16 +253,89 @@
                 photo: photo,
                 scores: scores
             };
+
+            
+
+            $.ajax({url: "/api/friends", method: "GET"}).then(function(response) {
+                friends = response;
+                let friendScores = [];
+                friends.map(eachFriend => {
+                    let scoreDifferences = [];
+                    eachFriend.scores.map(function(eachScore, i) {
+                        scoreDifferences.push(Math.abs(person.scores[i] - eachScore));
+                    });
+                    let summedDifference = scoreDifferences.reduce(function(acc, val) { return acc + val; });
+                    friendScores.push(summedDifference);
+                })
+
+                let bestScore = 0;
+                let bestMatch;
+                friendScores.map(function(matchScore, i) {
+                    if (bestScore < matchScore) {
+                        bestScore = matchScore;
+                        bestMatch = friends[i];
+                    }
+                });
+                
+                $("#matchName").empty();
+                $("#matchPhoto").empty();
+                $("#matchName").append(`<h3>${bestMatch.name}</h3>`);
+                $("#matchPhoto").append(`<img src="${bestMatch.photo}" width="300px">`);
+                
+                updateFriendsData(person);
+            }).catch(function(err) {
+                if (err) throw err;
+            });
+            // $.get("/api/friends", function(data){
+            //     console.log("Data: " + data);
+            // });
+
+            // $.ajax({
+            //     method: "GET",
+            //     url: "/api/friends",
+            // }).then(results => {
+            //     console.log("Line 256", results.data);
+            //     $.ajax({
+            //         method: "POST",
+            //         url: "/api/friends",
+            //         data: person
+            //     }).then(results => {
+            //         console.log("Line 262", results2);
+            //     }).catch(err => {
+            //         if (err) throw err;
+            //     });;
+            // }).catch(err => {
+            //     if (err) throw err;
+            // });
+
+
+
+
             // findMatch(person);
             // post that object using ajax
-            $.ajax({
-                method: "POST",
-                url: "/api/friends",
-                data: person
-            });
 
             // get the friendsArray and loop through it to determine the best match
         });
+
+        function updateFriendsData(inputPerson) {
+            $.ajax({
+                method: "POST",
+                url: "/api/friends",
+                data: inputPerson
+            })
+            // .then(function(response) {
+            //     console.log(response);
+            // }).fail( function(xhr, textStatus, errorThrown) {
+            //     alert(xhr.responseText);
+            // });
+            
+            
+            // .catch(err => {
+            //     if (err) {
+            //         console.log("Some weird err going on", err);
+            //     };
+            // });;
+        };
         
     // function findMatch(inputPerson) {
     //     // let friends;

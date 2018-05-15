@@ -19,6 +19,7 @@ apiRoutes = function(expressApp) {
         })
         friendsArray.push(body);
         fs.writeFile(path.join(__dirname, "../data/friends.js"), "const friendsArray = " + JSON.stringify(friendsArray, null, "\t") + ";\nmodule.exports = friendsArray;");
+        return "Friends Data Updated";
     });   
 }
 
