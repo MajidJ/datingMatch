@@ -3,6 +3,8 @@ const friendsArray = require(path.join(__dirname, "../data/friends.js"));
 const fs = require("fs");
 
 
+// Get and post requests for the friends array data
+// data is saved by writing to friends.js file
 apiRoutes = function(expressApp) {
     expressApp.get("/api/friends", function(req, res) {
         return res.json(friendsArray);
